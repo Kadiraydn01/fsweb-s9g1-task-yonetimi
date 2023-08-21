@@ -1,6 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { nanoid } from "nanoid";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TaskHookForm = ({ kisiler, submitFn }) => {
   const {
@@ -11,6 +13,12 @@ const TaskHookForm = ({ kisiler, submitFn }) => {
 
   const onSubmit = (data) => {
     submitFn({ ...data, status: "yapılacak", id: nanoid(5) });
+  };
+
+  const Success = () => {
+    if (register) {
+      toast("Yeni Göreviniz Eklendi !");
+    }
   };
 
   return (
@@ -65,9 +73,9 @@ const TaskHookForm = ({ kisiler, submitFn }) => {
               type="checkbox"
               {...register("people", {
                 required: "En az bir kişi seçmelisiniz !",
-                maxLength: {
-                  value: 3,
-                  message: "En fazla 3 kişi seçebilirsiniz",
+                validate: {
+                  maxThree: (value) =>
+                    value.length <= 3 || "En fazla 3 kişi seçebilirsiniz!",
                 },
               })}
             />
@@ -79,7 +87,24 @@ const TaskHookForm = ({ kisiler, submitFn }) => {
         )}
       </div>
       <div className="form-line">
-        <input type="submit" className="submit-button" value="Görevi Ekle" />
+        <input
+          type="submit"
+          className="submit-button"
+          value="Görevi Ekle"
+          onClick={Success}
+        />
+        <ToastContainer
+          position="top-center"
+          autoClose={1500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </div>
     </form>
   );
