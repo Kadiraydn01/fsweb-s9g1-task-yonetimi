@@ -5,12 +5,18 @@ const Task = ({ taskObj, onComplete }) => {
     <div className="task">
       <h3>{taskObj.title}</h3>
       <p>{taskObj.description}</p>
+
       <div>
         {taskObj.people.map((p) => (
-          <span className="pill" key={p}>{p}</span>
+          <span className="pill" key={p}>
+            {p}
+          </span>
         ))}
       </div>
-      {onComplete && <button onClick={() => onComplete(taskObj.id)}>Tamamlandı</button>}
+
+      {onComplete && (
+        <button onClick={() => onComplete(taskObj.id)}>Tamamlandı</button>
+      )}
     </div>
   );
 };

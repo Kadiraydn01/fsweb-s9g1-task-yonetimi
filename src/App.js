@@ -18,15 +18,19 @@ function App() {
   }
 
   function handleComplete(id) {
-    console.log("tamamlama fonksiyonunu buraya yazın");
+    const doneTasks = tasks.map((task) => {
+      if (task.id === id) {
+        task.status = "yapıldı";
+      }
+      return task;
+    });
+    setTasks(doneTasks);
   }
 
   return (
     <div className="app">
       <div className="formColumn">
         <div className="form-container">
-          {/* <h2>Yeni Task</h2>
-          <TaskForm kisiler={team} submitFn={handleTaskSubmit} /> */}
           <TaskHookForm kisiler={team} submitFn={handleTaskSubmit} />
         </div>
 
