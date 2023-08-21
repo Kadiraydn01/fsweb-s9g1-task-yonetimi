@@ -1,128 +1,85 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { nanoid } from "nanoid";
+
 const TaskHookForm = ({ kisiler, submitFn }) => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    people: [],
-  });
-
-  const [customErrors, setCustomErrors] = useState({});
-
   const {
     register,
+    handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: "all" });
 
-  function handleCheckboxChange(e) {
-    const { value } = e.target;
-
-    let yeniPeople = [...formData.people];
-    const index = formData.people.indexOf(value);
-    if (index > -1) {
-      yeniPeople.splice(index, 1);
-    } else {
-      yeniPeople.push(value);
-    }
-
-    setFormData({
-      ...formData,
-      people: yeniPeople,
-    });
-
-    setCustomErrors({
-      ...customErrors,
-      people: "",
-    });
-  }
-
-  function handleOthersChange(e) {
-    const { name, value } = e.target;
-    register(name, value);
-
-    setCustomErrors({
-      ...customErrors,
-      [name]: "",
-    });
-  }
-
-  function handleFormSubmit(e) {
-    e.preventDefault();
-    submitFn({
-      ...formData,
-      id: nanoid(5),
-      status: "yapılacak",
-    });
-    setFormData({
-      title: "",
-      description: "",
-      people: [],
-      customErrors: {},
-    });
-  }
+  const onSubmit = (data) => {
+    submitFn({ ...data, status: "yapılacak", id: nanoid(5) });
+  };
 
   return (
-    <form className="taskForm" onSubmit={handleFormSubmit}>
-      <div className="form-line">
-        <label className="input-label" htmlFor="title">
-          Başlık
+    <form className="taskForm" onSubmit={handleSubmit(onSubmit)}>
+      <div>
+        <label htmlFor="title" className="input-label">
+          Başlığınız :
         </label>
         <input
           className="input-text"
-          id="title"
-          name="title"
           type="text"
-          onChange={(e) => setFormData({ title: e.target.value })}
-          defaultValue=""
+          id="title"
+          placeholder="Title"
+          {...register("title", {
+            required: "Başlık alanı boş bırakılamaz !",
+            minLength: {
+              value: 3,
+              message: "Başlık en az 3 karakter içermelidir",
+            },
+          })}
         />
-        {customErrors.title && (
-          <p className="input-error">{customErrors.title}</p>
-        )}
+        {errors.title && <p className="input-error">{errors.title.message}</p>}
       </div>
-
       <div className="form-line">
-        <label className="input-label" htmlFor="description">
-          Açıklama
+        <label htmlFor="description" className="input-label">
+          Açıklama :
         </label>
-        <textarea
+        <input
           className="input-textarea"
-          rows="3"
+          type="text"
           id="description"
-          name="description"
-          onChange={(e) => setFormData({ description: e.target.value })}
-          defaultValue=""
-        ></textarea>
-        {customErrors.description && (
-          <p className="input-error">{customErrors.description}</p>
+          placeholder="Açıklama"
+          {...register("description", {
+            required: "Mutlaka Açıklama Yazmalısınız!",
+            minLength: {
+              value: 10,
+              message: "Açıklama en az 10 karakter içermelidir",
+            },
+          })}
+        />
+        {errors.description && (
+          <p className="input-error">{errors.description.message}</p>
         )}
       </div>
-
       <div className="form-line">
-        <label className="input-label">İnsanlar</label>
-        <div>
-          {kisiler.map((p) => (
-            <label className="input-checkbox" key={p}>
-              <input
-                type="checkbox"
-                name="people"
-                value={p}
-                onChange={handleCheckboxChange}
-                checked={formData.people.includes(p)}
-              />
-              {p}
-            </label>
-          ))}
-        </div>
-        {customErrors.people && (
-          <p className="input-error">{customErrors.people}</p>
+        <label className="input-label">İnsanlar :</label>
+        {kisiler.map((herbirkisi, i) => (
+          <div key={i}>
+            <input
+              className="input-checkbox"
+              value={herbirkisi}
+              type="checkbox"
+              {...register("people", {
+                required: "En az bir kişi seçmelisiniz !",
+                maxLength: {
+                  value: 3,
+                  message: "En fazla 3 kişi seçebilirsiniz",
+                },
+              })}
+            />
+            {herbirkisi}
+          </div>
+        ))}
+        {errors.people && (
+          <p className="input-error">{errors.people.message}</p>
         )}
       </div>
-
       <div className="form-line">
-        <button className="submit-button" type="submit">
-          Kaydet
-        </button>
+        <input type="submit" className="submit-button" value="Görevi Ekle" />
       </div>
     </form>
   );
